@@ -1,2 +1,2 @@
 # api-rest-login
-An Api built in Django.
+An Api built in Django for Duoc Uc App.
