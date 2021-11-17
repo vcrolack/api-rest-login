@@ -13,9 +13,9 @@ class UserView(View):
   def dispatch(self, request, *args, **kwargs):
       return super().dispatch(request, *args, **kwargs)
   
-  def get(self, request, id=0, email='', password=''):
-    if len(email) > 0 and len(password):
-      users = list(User.objects.filter(email=email, password=password).values())
+  def get(self, request, id=0, username='', password=''):
+    if len(username) > 0 and len(password):
+      users = list(User.objects.filter(username=username, password=password).values())
       if len(users) > 0:
         user = users[0]
         datos = {'message': "Success", 'users': user, 'verification_state': 'true'}
