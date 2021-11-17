@@ -13,14 +13,14 @@ class UserView(View):
   def dispatch(self, request, *args, **kwargs):
       return super().dispatch(request, *args, **kwargs)
   
-  def get(self, request, id=0):
-    if id > 0:
-      users = list(User.objects.filter(id=id).values())
+  def get(self, request, id=0, email='', password=''):
+    if len(email) > 0 and len(password):
+      users = list(User.objects.filter(email=email, password=password).values())
       if len(users) > 0:
         user = users[0]
-        datos = {'message': "Success", 'users': user}
+        datos = {'message': "Success", 'users': user, 'verification_state': 'true'}
       else:
-        datos = {'message': "User not found..."}
+        datos = {'message': "User not found...", 'verification_state': 'false'}
       return JsonResponse(datos)
     else:
       users = list(User.objects.values())
@@ -66,3 +66,6 @@ class UserView(View):
     else:
       datos = {'message': "User not found..."}
     return JsonResponse(datos)
+  
+
+
