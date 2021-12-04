@@ -2,7 +2,7 @@ from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from .models import User, Bike
+from .models import User, Bike, Vehicle
 import json
 
 # Create your views here.
@@ -32,7 +32,7 @@ class UserView(View):
 
   def post(self, request):
     jd = json.loads(request.body)
-    User.objects.create(name=jd['name'], lastname=jd['lastname'], username=jd['username'], email=jd['email'], password=jd['password'])
+    User.objects.create(name=jd['name'], lastname=jd['lastname'], username=jd['username'], email=jd['email'], password=jd['password'], isDriver=jd['isDriver'])
     datos = {'message': "Success"}
     return JsonResponse(datos)
 
@@ -47,6 +47,7 @@ class UserView(View):
       user.username = jd['username']
       user.email = jd['email']
       user.password = jd['password']
+      user.isDriver = jd['isDriver']
       user.save()
       datos = {'message': "Success"}
 
@@ -64,6 +65,62 @@ class UserView(View):
     else:
       datos = {'message': "User not found..."}
     return JsonResponse(datos)
+
+
+
+class VehicleView(View):
+  
+  @method_decorator(csrf_exempt)
+  def dispatch(self, request, *args, **kwargs):
+      return super().dispatch(request, *args, **kwargs)
+
+  def get(self, request, patent=''):
+    if len(patent) > 0:
+      vehicles = list(Vehicle.objects.filter(patent=patent).values())
+      if len(vehicles) > 0:
+        vehicle = vehicles[0]
+        datos = {'message': 'Success', 'vehicle': vehicle}
+      else:
+        datos = {'message': 'Vehicle not found...'}
+      return JsonResponse(datos)
+    else:
+      vehicles = list(Vehicle.objects.values())
+      if len(vehicles) > 0:
+        datos = {'message': 'Success', 'vehicles': vehicles}
+      else:
+        datos = {'message': 'Vehicles not found...'}
+      return JsonResponse(datos)
+  
+  def post(self, request):
+    jd = json.loads(request.body)
+    Vehicle.objects.create(patent=jd['patent'], brand=jd['brand'], model=jd['model'], capacity=jd['capacity'], year=jd['year'], user_id=jd['user_id'])
+    datos = {'message': 'Success'}
+    return JsonResponse(datos)
+
+  def put(self, request, patent):
+    jd = json.loads(request.body)
+    vehicles = list(Vehicle.objects.filter(patent=patent).values())
+    if len(vehicles) > 0: 
+      vehicle = Vehicle.objects.get(patent=patent)
+      vehicle.brand = jd['brand']
+      vehicle.model = jd['model']
+      vehicle.capacity = jd['capacity']
+      vehicle.year = jd['year']
+      vehicle.save()
+      datos = {'message': 'Success'}
+    else:
+      datos = {'message': 'Vehicle not foud'}
+    return JsonResponse(datos)
+  
+  def delete(self, request, patent):
+    vehicles = list(Vehicle.objects.filter(patent=patent).values())
+    if len(vehicles) > 0:
+      Vehicle.objects.filter(patent=patent).delete()
+      datos = {'message': 'Success'}
+    else:
+      datos = {'message': 'Vehicle not found...'}
+    return JsonResponse(datos)
+
 
 class BikeView(View):
   

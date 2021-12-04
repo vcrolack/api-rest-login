@@ -1,0 +1,1 @@
+Se adjunta cualquier cosa una schema hecho en MySql en la carpeta bd adjuntada
