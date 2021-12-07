@@ -2,7 +2,7 @@ from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from .models import User, Bike, Vehicle
+from .models import User, Bike, Vehicle, Route
 import json
 
 # Create your views here.
@@ -74,7 +74,7 @@ class VehicleView(View):
   def dispatch(self, request, *args, **kwargs):
       return super().dispatch(request, *args, **kwargs)
 
-  def get(self, request, patent=''):
+  def get(self, request, patent='',user_id=0):
     if len(patent) > 0:
       vehicles = list(Vehicle.objects.filter(patent=patent).values())
       if len(vehicles) > 0:
@@ -82,6 +82,13 @@ class VehicleView(View):
         datos = {'message': 'Success', 'vehicle': vehicle}
       else:
         datos = {'message': 'Vehicle not found...'}
+      return JsonResponse(datos)
+    elif user_id > 0:
+      vehicles = list(Vehicle.objects.filter(user_id=user_id).values())
+      if len(vehicles) > 0:
+        datos = {'message': 'Success', 'vehicle': vehicles}
+      else:
+        datos = {'message': 'Vehicle not found ...'}
       return JsonResponse(datos)
     else:
       vehicles = list(Vehicle.objects.values())
@@ -93,7 +100,7 @@ class VehicleView(View):
   
   def post(self, request):
     jd = json.loads(request.body)
-    Vehicle.objects.create(patent=jd['patent'], brand=jd['brand'], model=jd['model'], capacity=jd['capacity'], year=jd['year'], user_id=jd['user_id'])
+    Vehicle.objects.create(patent=jd['patent'], brand=jd['brand'], model=jd['model'], capacity=jd['capacity'], year=jd['year'], user_id=jd['user_id'], passengers_suscribed=jd['passengers_suscribed'])
     datos = {'message': 'Success'}
     return JsonResponse(datos)
 
@@ -106,6 +113,7 @@ class VehicleView(View):
       vehicle.model = jd['model']
       vehicle.capacity = jd['capacity']
       vehicle.year = jd['year']
+      
       vehicle.save()
       datos = {'message': 'Success'}
     else:
@@ -119,6 +127,67 @@ class VehicleView(View):
       datos = {'message': 'Success'}
     else:
       datos = {'message': 'Vehicle not found...'}
+    return JsonResponse(datos)
+
+class RouteView(View):
+
+  @method_decorator(csrf_exempt)
+  def dispatch(self, request, *args, **kwargs):
+      return super().dispatch(request, *args, **kwargs)
+
+  def get(self, request, id=0, user_id=0):
+    if id > 0:
+      routes = list(Route.objects.filter(id=id).values())
+      if len(routes) > 0:
+        route = routes[0]
+        datos = {'message': 'Success', 'route': route}
+      else:
+        datos = {'message': 'Route not found ...'}
+      return JsonResponse(datos)
+    elif user_id > 0:
+      routes = list(Route.objects.filter(user_id=user_id).values())
+      if len(routes) > 0:
+        datos = {'message': 'Success', 'routes': routes}
+      else: 
+        datos = {'message': 'Routes not found...'}
+      return JsonResponse(datos)
+    else:
+      routes = list(Route.objects.values())
+      if len(routes) > 0:
+        datos = {'message': 'Success', 'routes': routes}
+      else:
+        datos = {'message': 'Routes not found ...'}
+      return JsonResponse(datos)
+  
+  def post(self, request):
+    jd =json.loads(request.body)
+    Route.objects.create(campus=jd['campus'], destiny=jd['destiny'], rate=jd['rate'], user_id=jd['user_id'], passengers_suscribed=jd['passengers_suscribed'])
+    datos = {'message': 'Success'}
+    return JsonResponse(datos)
+  
+  def put(self, request, id=0):
+    jd = json.loads(request.body)
+    print(request.body)
+    routes = list(Route.objects.filter(id=id).values())
+    if len(routes) > 0:
+      route = Route.objects.get(id=id)
+      route.campus = jd['campus']
+      route.destiny = jd['destiny']
+      route.rate = jd['rate']
+      route.passengers_suscribed = jd['passengers_suscribed']
+      route.save()
+      datos = {'message': 'Success'}
+    else:
+      datos = {'message': 'Route not found...'}
+    return JsonResponse(datos)
+  
+  def delete(self, request, id=0):
+    routes = list(Route.objects.filter(id=id).values())
+    if len(routes) > 0:
+      Route.objects.filter(id=id).delete()
+      datos = {'message': 'Success'}
+    else:
+      datos = {'message': 'Route not found'}
     return JsonResponse(datos)
 
 

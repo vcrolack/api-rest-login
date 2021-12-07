@@ -22,3 +22,11 @@ class Vehicle(models.Model):
   capacity = models.IntegerField(verbose_name="Capacidad")
   year = models.IntegerField(verbose_name="Anio")
   user_id =  models.IntegerField(verbose_name="Id usuario", blank=False, null=False)
+  
+
+class Route(models.Model):
+  campus = models.CharField(max_length=30,verbose_name="Sede")
+  destiny = models.CharField(max_length=60, verbose_name="Destino") 
+  rate = models.IntegerField(verbose_name="Tarifa")
+  user_id = models.IntegerField(verbose_name="Id usuario")
+  passengers_suscribed = models.IntegerField(verbose_name="Pasajeros suscritos")

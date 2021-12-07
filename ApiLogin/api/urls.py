@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import UserView, BikeView, VehicleView
+
+from .views import UserView, BikeView, VehicleView, RouteView
 
 
 urlpatterns = [
@@ -9,5 +10,10 @@ urlpatterns = [
   path('bikes/', BikeView.as_view(), name='bikes_list'),
   path('bikes/<int:id>/', BikeView.as_view(), name='post_bike'),
   path('vehicles/', VehicleView.as_view(), name='get_vehicles'),
-  path('vehicles/<str:patent>/', VehicleView.as_view(), name='get_vehicle')
+  path('vehicles/<str:patent>/', VehicleView.as_view(), name='get_vehicle'),
+  path('vehicles/user/<int:user_id>/', VehicleView.as_view(), name='get_vehicle_by_user_id'),
+  path('routes/',RouteView.as_view(), name='get_routes'),
+  path('routes/<int:id>/', RouteView.as_view(), name='get_route'),
+  path('routes/user/<int:user_id>/', RouteView.as_view(), name='get_users_routes'),
+  
 ]
